@@ -60,7 +60,8 @@ export default class BarChart extends React.Component {
       yAxisOrientRight: React.PropTypes.bool,
       barWidth: React.PropTypes.number,
       xTickNumber: React.PropTypes.number,
-      yTickNumber: React.PropTypes.number
+      yTickNumber: React.PropTypes.number,
+      showValue: React.PropTypes.bool
     };
   }
 
@@ -340,7 +341,8 @@ export default class BarChart extends React.Component {
       clickHandler,
       colorBars,
       xType,
-      barWidth
+      barWidth,
+      showValue
     } = this.props;
 
     const calculateDate = (v) => this.parseDate(v);
@@ -362,6 +364,10 @@ export default class BarChart extends React.Component {
     const mousemove = (d) => mouseMoveHandler(d, lastEvent);
     const click = (d) => clickHandler(d, lastEvent);
 
+    const calculateTextX = (d) => calculateX(d) + (calculateW(d) / 2);
+    const calculateTextY = (d) => calculateY(d) + (calculateH(d) / 2);
+    const getValue = (d) => d.y;
+
     const group = root
       .selectAll('rect') // '.bar'
       .data(data);
@@ -379,6 +385,16 @@ export default class BarChart extends React.Component {
       .on('mouseout', mouseout)
       .on('mousemove', mousemove)
       .on('click', click);
+
+    if (showValue) {
+      group
+        .enter()
+        .append('text')
+        .attr('x', calculateTextX)
+        .attr('y', calculateTextY)
+        .attr('dy', '.35em')
+        .text(getValue);
+    }
 
     group
       .exit()
